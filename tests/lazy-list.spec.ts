@@ -1,19 +1,24 @@
 import { test, expect } from '@playwright/test';
 
 test('Load and Verify List Items', async ({ page }) => {
-  await page.goto('/public/artifacts/1e02a9a5-4f20-4f19-a7ba-6c3f16c6eab9');
-  await page.getByText('Timing Challenges').click();
+
+  await page.goto('https://claude.ai/public/artifacts/1e02a9a5-4f20-4f19-a7ba-6c3f16c6eab9');
+  await page.getByTestId('consent-accept').click();
+
+  const frame = page.locator('iframe[title="Claude content"]').contentFrame();
 
   for (let i = 0; i < 3; i++) {
-    await page.getByText('Load More Items').click();
-    await page.waitForSelector('.list-item');
+    await frame.getByTestId('load-more').click();
   }
 
-  const items = page.locator('.list-item');
-  await expect(items).toHaveCount(15);
+  // 🔥 Wait until all 15 items are present
+  await expect(frame.locator('[data-testid^="list-item-"]')).toHaveCount(15);
 
-  const activeCount = await page.locator('.status-active').count();
-  const pendingCount = await page.locator('.status-pending').count();
+const activeCount = await frame.locator('[data-testid^="list-item-"]').filter({ hasText: 'active' }).count();  
+const pendingCount = await frame.getByText('pending').count();
+
+  console.log(`Active items found: ${activeCount}`);
+  console.log(`Pending items found: ${pendingCount}`);
 
   expect(activeCount).toBeGreaterThan(0);
   expect(pendingCount).toBeGreaterThan(0);
