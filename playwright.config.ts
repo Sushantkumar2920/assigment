@@ -6,7 +6,7 @@ export default defineConfig({
   timeout: 10000,
   use: {
     storageState: 'auth.json',
-    headless: false,
+    headless: true,
     baseURL: 'https://claude.ai',
     actionTimeout: 100000
   },
